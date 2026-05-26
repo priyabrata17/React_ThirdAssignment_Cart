@@ -15,13 +15,13 @@ function Header() {
         {/* Navigation */}
         <nav>
           <ul className="flex items-center gap-8 text-white">
-            <li className="flex items-center gap-2 cursor-pointer hover:text-gray-300">
-              <FaHome size={20} />
+            <li className="flex items-center gap-2 cursor-pointer hover:text-gray-300 font-bold">
+              <FaHome size={20} className="text-cyan-400" />
               <span><NavLink to={"/"}>Home</NavLink></span>
             </li>
 
-            <li className="flex items-center gap-2 cursor-pointer hover:text-gray-300">
-              <FaShoppingCart size={20} />
+            <li className="flex items-center gap-2 cursor-pointer hover:text-gray-300 font-bold">
+              <FaShoppingCart size={20} className="text-rose-400" />
               <span><NavLink to={"/cart"}>Cart({products.length})</NavLink></span>
             </li>
           </ul>
