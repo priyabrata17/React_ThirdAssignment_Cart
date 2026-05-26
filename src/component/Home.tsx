@@ -1,6 +1,6 @@
 import useCartStore from "../store/cartStore";
 import type { IProduct } from "../types/type";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import LoaderButton from "./LoaderButton";
 
@@ -147,9 +147,30 @@ const allProducts: IProduct[] = [
   },
 ];
 
+//remove duplicates and create a new array with categoriues
+const categoryArr = [
+  ...new Set(allProducts.map((product) => product.category)),
+];
+
 function Home() {
   const { addProduct } = useCartStore((state) => state);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [category, setCategory] = useState("");
+  const [query, setQuery] = useState("");
+
+  const filteredProducts = useMemo(
+    () =>
+      allProducts.filter((product) => {
+        let categoryMatch = category === "" || category === product.category;
+        let queryMatch =
+          query === "" ||
+          product.title.toLowerCase().includes(query.toLowerCase());
+
+        return categoryMatch && queryMatch;
+      }),
+    [allProducts, category, query],
+  );
+
   const handleAddProduct = (product: IProduct) => {
     setLoadingId(product.id);
     setTimeout(() => {
@@ -161,10 +182,35 @@ function Home() {
   return (
     <div className="max-w-7xl w-full mx-auto min-h-screen text-white p-6">
       <h2 className="text-3xl font-bold mb-8">All Products</h2>
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        {/* Search Box */}
+        <input
+          type="text"
+          placeholder="Search products by title..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-1 px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white outline-none focus:border-cyan-400"
+        />
 
-      {allProducts.length > 0 ? (
+        {/* Category Dropdown */}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white outline-none 
+          focus:border-cyan-400"
+        >
+          <option value="">All Categories</option>
+          {categoryArr.map((category) => (
+            <option key={category} value={category} className="capitalize">
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {filteredProducts.length > 0 ? (
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allProducts.map((product) => (
+          {filteredProducts.map((product) => (
             <li
               key={product.id}
               className="bg-gray-800 p-5 rounded-lg border border-gray-700 hover:border-cyan-400 transition-all
